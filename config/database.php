@@ -1,21 +1,10 @@
 <?php
-
 class Database {
-    private $host = "localhost";
-    private $dbname = "meetic";
-    private $username = "root";
-    private $password = "ROOT";
-    public $conn;
-
-    public function getConnection() {
-        $this->conn = null;
+    public static function connect() {
         try {
-            $this->conn = new PDO("mysql:host=" . $this->host . ";dbname=" . $this->dbname, $this->username, $this->password);
-            $this->conn->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-        } catch (PDOException $exception) {
-            echo "Connection error: " . $exception->getMessage();
+            return new PDO('mysql:host=localhost;dbname=meetic;charset=utf8', 'root', 'ROOT');
+        } catch (PDOException $e) {
+            die('Erreur DB : ' . $e->getMessage());
         }
-        return $this->conn;
     }
 }
-?>
