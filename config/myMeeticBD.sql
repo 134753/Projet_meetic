@@ -73,6 +73,16 @@ CREATE TABLE IF NOT EXISTS `match` (
     FOREIGN KEY (id_matched_user) REFERENCES user(id) ON DELETE CASCADE
 );
 
+CREATE TABLE IF NOT EXISTS message (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    sender_id INT NOT NULL,
+    receiver_id INT NOT NULL,
+    content TEXT NOT NULL,
+    created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (sender_id) REFERENCES user(id) ON DELETE CASCADE,
+    FOREIGN KEY (receiver_id) REFERENCES user(id) ON DELETE CASCADE
+);
+
 
 
 INSERT INTO hobby (name)

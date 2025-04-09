@@ -177,6 +177,83 @@ class User extends Model
         return $stmt->fetch(PDO::FETCH_ASSOC);
     }
 
+    public function getMutualMatches($userId)
+    {
+        $stmt = $this->db->prepare("
+            SELECT u.id, u.pseudo, u.firstname, u.city
+            FROM user u
+            WHERE u.id IN (
+                SELECT m1.id_matched_user
+                FROM `match` m1
+                JOIN `match` m2
+                ON m1.id_user = m2.id_matched_user
+                AND m1.id_matched_user = m2.id_user
+                WHERE m1.id_user = ?
+            )
+        ");
+        $stmt->execute([$userId]);
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    }
+
+    public function getMatchById($userId, $matchId)
+    {
+        // Vérifie s'il y a un match réciproque
+        $stmt = $this->db->prepare("
+            SELECT u.* FROM user u
+            JOIN `match` m1 ON u.id = m1.id_matched_user
+            JOIN `match` m2 ON u.id = m2.id_user
+            WHERE m1.id_user = ? AND m2.id_matched_user = ? AND u.id = ?
+        ");
+        $stmt->execute([$userId, $userId, $matchId]);
+        return $stmt->fetch(PDO::FETCH_ASSOC);
+    }
+
+    public function getMessages($userId, $matchId)
+    {
+        $stmt = $this->db->prepare("
+            SELECT * FROM message
+            WHERE (sender_id = ? AND receiver_id = ?)
+            OR (sender_id = ? AND receiver_id = ?)
+            ORDER BY created_at ASC
+        ");
+        $stmt->execute([$userId, $matchId, $matchId, $userId]);
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    }
+
+    public function sendMessage($senderId, $receiverId, $content)
+    {
+        $stmt = $this->db->prepare("
+            INSERT INTO message (sender_id, receiver_id, content)
+            VALUES (?, ?, ?)
+        ");
+        return $stmt->execute([$senderId, $receiverId, $content]);
+    }
 
 
+    public function getMutualMatchesWithNotifications($userId)
+    {
+        $stmt = $this->db->prepare("
+            SELECT u.id, u.pseudo, u.firstname, u.city,
+                (SELECT COUNT(*) FROM message
+                 WHERE sender_id = u.id AND receiver_id = ? AND is_read = FALSE) AS unread
+            FROM user u
+            WHERE u.id IN (
+                SELECT m1.id_matched_user
+                FROM `match` m1
+                JOIN `match` m2
+                  ON m1.id_user = m2.id_matched_user
+                 AND m1.id_matched_user = m2.id_user
+                WHERE m1.id_user = ?
+            )
+        ");
+        $stmt->execute([$userId, $userId]);
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    }
+
+    public function getDb()
+    {
+        return $this->db;
+    }
+
+    
 }

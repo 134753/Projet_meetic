@@ -60,6 +60,10 @@ class UserController extends Controller
                     }
                 }
 
+                $db = $userModel->getDb();
+                $stmt = $db->prepare("INSERT INTO user_hobby (id_user, id_hobby) VALUES (?, ?)");
+                $stmt = $db->prepare("INSERT INTO user_genre (id_user, id_genre) VALUES (?, ?)");
+
                 // Enregistrement du genre
                 if ($user && isset($_POST['genre'])) {
                     $stmt = $userModel->db->prepare("INSERT INTO user_genre (id_user, id_genre) VALUES (?, ?)");
@@ -218,6 +222,78 @@ class UserController extends Controller
         ]);
     }
 
+    public function matches()
+    {
+        if (session_status() === PHP_SESSION_NONE) session_start();
+    
+        if (!isset($_SESSION['user'])) {
+            header('Location: index.php?controller=auth&action=login');
+            exit;
+        }
+    
+        $userModel = new User();
+        // Appel la méthode qui inclut les notifications
+        $matches = $userModel->getMutualMatchesWithNotifications($_SESSION['user']['id']);
+    
+        $this->render('matches', [
+            'title' => 'Mes matchs',
+            'matches' => $matches
+        ]);
+    }
+    
+    
+    public function chat()
+    {
+        if (session_status() === PHP_SESSION_NONE) session_start();
 
+        if (!isset($_SESSION['user'])) {
+            header('Location: index.php?controller=auth&action=login');
+            exit;
+        }
+
+        $userId = $_SESSION['user']['id'];
+        $matchId = $_GET['match_id'] ?? null;
+
+        if (!$matchId) {
+            header("Location: index.php?controller=user&action=matches");
+            exit;
+        }
+
+        $userModel = new User();
+
+        // Vérifie que c’est bien un match
+        $matchUser = $userModel->getMatchById($userId, $matchId);
+        if (!$matchUser) {
+            echo "Vous ne pouvez pas discuter avec cet utilisateur.";
+            exit;
+        }
+
+        // Envoi du message
+        if ($_SERVER['REQUEST_METHOD'] === 'POST' && !empty($_POST['content'])) {
+            $userModel->sendMessage($userId, $matchId, $_POST['content']);
+            header("Location: index.php?controller=user&action=chat&match_id=$matchId");
+            exit;
+        }
+
+        // Récupère la conversation
+        $messages = $userModel->getMessages($userId, $matchId);
+
+        // Marque les messages comme lus
+        $stmt = $userModel->db->prepare("
+        UPDATE message SET is_read = TRUE
+        WHERE receiver_id = ? AND sender_id = ? AND is_read = FALSE
+        ");
+        $stmt->execute([$userId, $matchId]);
+
+
+        $this->render('chat', [
+            'title' => "Discussion avec " . $matchUser['pseudo'],
+            'matchUser' => $matchUser,
+            'messages' => $messages
+        ]);
+    }
+
+
+    
 
 }

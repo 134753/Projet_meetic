@@ -41,7 +41,8 @@
         <p>Bonjour, <?= htmlspecialchars($_SESSION['user']['pseudo']) ?> !</p>
         <a href="index.php?controller=user&action=profil">👤 Voir mon profil</a> 
         <a href="index.php?controller=user&action=match">🎯 Faire des rencontres</a>
-        <a href="index.php?controller=user&action=suggestions">💘 Suggestions de profils</a>|
+        <a href="index.php?controller=user&action=suggestions">💘 Suggestions de profils</a>
+        <a href="index.php?controller=user&action=matches">💑 Voir mes matchs</a>|
         <a href="index.php?controller=auth&action=logout">🚪 Se déconnecter</a>
     <?php else: ?>
         <a href="index.php?controller=auth&action=login">🔐 Connexion</a> |
