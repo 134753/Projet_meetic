@@ -6,7 +6,7 @@
     <style>
         body {
             font-family: Arial, sans-serif;
-            background: #f2f2f2;
+            background-image: url('view/asset/White Grey Red Vintage Illustrative Love Logo-4.png');
             padding: 2rem;
             text-align: center;
         }
@@ -35,18 +35,18 @@
         }
     ?>
 
-    <h1>Bienvenue sur Meetic</h1>
+    <h1>Bienvenue sur My Love</h1>
 
     <?php if (isset($_SESSION['user'])): ?>
         <p>Bonjour, <?= htmlspecialchars($_SESSION['user']['pseudo']) ?> !</p>
-        <a href="index.php?controller=user&action=profil">👤 Voir mon profil</a> 
-        <a href="index.php?controller=user&action=match">🎯 Faire des rencontres</a>
-        <a href="index.php?controller=user&action=suggestions">💘 Suggestions de profils</a>
-        <a href="index.php?controller=user&action=matches">💑 Voir mes matchs</a>|
-        <a href="index.php?controller=auth&action=logout">🚪 Se déconnecter</a>
+        <a href="index.php?controller=user&action=profil">Voir mon profil</a> 
+        <a href="index.php?controller=user&action=match">Faire des rencontres</a>
+        <a href="index.php?controller=user&action=suggestions">Suggestions de profils</a>
+        <a href="index.php?controller=user&action=matches">Voir mes matchs</a>|
+        <a href="index.php?controller=auth&action=logout">Se déconnecter</a>
     <?php else: ?>
-        <a href="index.php?controller=auth&action=login">🔐 Connexion</a> |
-        <a href="index.php?controller=user&action=register">📝 Inscription</a>
+        <a href="index.php?controller=auth&action=login">Connexion</a> |
+        <a href="index.php?controller=user&action=register">Inscription</a>
     <?php endif; ?>
 
 

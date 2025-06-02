@@ -77,7 +77,6 @@
 
         <button type="submit">Créer un compte</button>
     </form>
-    <!-- ... -->
 
     <p style="margin-top:1rem;">
         <a href="index.php?controller=user&action=home">← Retour à l'accueil</a><br>

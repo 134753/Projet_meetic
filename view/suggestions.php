@@ -1,5 +1,4 @@
 
-
 <?php if (empty($suggestions)): ?>
     <p>Aucun profil correspondant trouvé pour le moment 😢</p>
 <?php else: ?>
